@@ -1,0 +1,103 @@
+1、创建数据库
+	>sqlite3 test.db
+2、附加数据库 | 分离数据库
+	sqlite>attach database 'DatabaseName' as 'Alias-Name';
+	sqlite>detach database 'Alias-Name';
+3、将数据库导出 .sql 文件
+	>sqlite3 test.db .dump > test.sql
+4、查看表结构
+	sqlite>select * from sqlite_master where type = 'table' [and name = 'test'];
+5、触发器（插入前后、更新前后、删除前后）
+	查看触发器：>select * from sqlite_master where type = 'trigger' [and tbl_name = 'audit_log'];
+	删除触发器：>drop trigger trigger_name;
+
+	插入前：
+	CREATE TRIGGER befor_ins BEFORE INSERT   
+	ON COMPANY  
+	BEGIN  
+	INSERT INTO AUDIT(EMP_ID, ACTION_TYPE ,ENTRY_DATE) VALUES (new.ID, 'BEFORE INSERT', datetime('now'));
+	END;
+	插入后：
+	CREATE TRIGGER audit_log AFTER INSERT   
+	ON COMPANY  
+	BEGIN  
+	INSERT INTO AUDIT(EMP_ID, ACTION_TYPE ,ENTRY_DATE) VALUES (new.ID, 'AFTER INSERT',datetime('now'));  
+	END;
+
+	更新前：
+	CREATE TRIGGER befor_up BEFORE UPDATE   
+	ON COMPANY  
+	BEGIN  
+	INSERT INTO AUDIT(EMP_ID, ACTION_TYPE, ENTRY_DATE) VALUES (new.ID, old.ADDRESS , datetime('now'));  
+	END;
+	更新后：
+	CREATE TRIGGER after_up AFTER UPDATE   
+	ON COMPANY  
+	BEGIN  
+	INSERT INTO AUDIT(EMP_ID, ACTION_TYPE, ENTRY_DATE) VALUES (new.ID, 'AFTER UPDATE', datetime('now'));  
+	END;
+
+	删除前：
+	删除后：
+	CREATE TRIGGER after_del  AFTER DELETE    
+	ON COMPANY  
+	BEGIN  
+	INSERT INTO AUDIT(EMP_ID, BEFORE_VAL, ACTION_TYPE, ENTRY_DATE) VALUES (old.ID, old.name, 'AFTER DELETE', datetime('now'));  
+	END;
+6、添加主键
+	当没有在 create table 语句中定义主键时，也可以在创建表后添加主键，但不能使用 alter table 添加主键，需要创建一个与原表一样的表，创建主键，并将旧表中的数据复制到新表中。删除主键方法类似。
+	PRAGMA foreign_keys=off;  
+	BEGIN TRANSACTION;  
+	ALTER TABLE table_name RENAME TO old_table;  
+	CREATE TABLE table_name  
+	(  
+	    column1 datatype [ NULL | NOT NULL ],  
+	    column2 datatype [ NULL | NOT NULL ],  
+	    ...  
+	    CONSTRAINT constraint_name PRIMARY KEY (pk_col1, pk_col2, ... pk_col_n)  
+	);  
+	INSERT INTO table_name SELECT * FROM old_table;  
+	COMMIT;  
+	PRAGMA foreign_keys=on;
+7、外键
+	-- 父表
+	CREATE TABLE departments  
+	(
+	    department_id INTEGER PRIMARY KEY AUTOINCREMENT,  
+	    department_name VARCHAR  
+	);  
+
+	-- 拥有外键的表
+	CREATE TABLE employees  
+	(
+	    employee_id INTEGER PRIMARY KEY AUTOINCREMENT,  
+	    last_name VARCHAR NOT NULL,  
+	    first_name VARCHAR,  
+	    department_id INTEGER,  
+	    CONSTRAINT fk_departments  
+	    FOREIGN KEY (department_id)  
+	    REFERENCES departments(department_id)  
+	);
+8、从 CSV 文件导入到 SQLite 表
+	>.mode csv
+	>.import C:/users/worky/employee.csv employee
+9、SQLite 将表导到 CSV 文件
+	>.header on
+	>.mode csv
+	>.once C:/users/worky/Desktop/student.csv
+	>select * from student;
+10、如何自动打卡 CSV 文件
+	>.system D:/software/sqlite/student.csv
+	在Windows上，使用.system命令后跟文件名。
+	在Mac上，使用.system open后跟文件名。
+	在Linux和Unix系统上，使用.system后跟程序的名称打开文件，后跟文件名。
+
+
+
+
+
+
+
+	
+
+

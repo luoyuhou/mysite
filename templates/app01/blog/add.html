@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/layui/layui.js"></script>
+
+    <style>
+        img {
+            display: inline-block;
+            max-width: 50%;
+            height: auto;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <strong><em>{{ title }}</em></strong>
+            <p>{{ detail }}</p>
+        </div>
+        <div class="panel-body">
+            <div class="content">
+                <form class="layui-form" action="" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                    {% csrf_token %}
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <input class="layui-input" type="text" name="title" placeholder="请输入标题" lay-verify="required" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <textarea id="demo" style="display: none;" name="content"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <input type="radio" name="public" value="1" title="公开" checked>
+                            <input type="radio" name="public" value="0" title="不公开">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
+                        </div>
+                    </div>
+                    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    layui.use(['form', 'layedit'], function () {
+        var form = layui.form;
+        var layedit = layui.layedit;
+
+
+        layedit.set({
+           uploadImage: {
+               url: '{{ upload_url }}',
+               type: 'post'
+           }
+        });
+        var index = layedit.build('demo', {
+            tool: [
+                 'strong', //加粗
+                  'italic', //斜体
+                  'underline', //下划线
+                  'del', //删除线
+                  '|', //分割线
+                  'left', //左对齐
+                  'center', //居中对齐
+                  'right', //右对齐
+                  'link', //超链接
+                  'unlink', //清除链接
+                  'face', //表情
+                  'image', //插入图片
+                  'help', //帮助
+            ],
+            height: 500,
+        });
+
+
+        //各种基于事件的操作，下面会有进一步介绍
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            console.log('getContent',layedit.getContent(index));
+            data.field['content'] = layedit.getContent(index);
+            if (data.field.content.trim() === '') return layer.msg('说点什么吧');
+            $.ajax({
+                url: '{{form_url}}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: (res) => {
+                    layer.msg('操作成功');
+                    if (!res.code) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000)
+                    }
+                },
+                error: (err) => {
+                    layer.msg(JSON.stringify(err))
+                }
+            });
+            return false;
+        });
+    });
+
+
+    //将图片地址拼接，路径之间用英文状态下的 ";" 分隔
+    function fill_image_path() {
+        var element = $('input[name="image_path"]');
+        console.log('element', element)
+        let arr = urls.filter(function (s) {
+            return s && s.trim()
+        });
+        console.log('arr', arr);
+        element.val(arr.join(';'));
+    }
+</script>
+</body>
+</html>

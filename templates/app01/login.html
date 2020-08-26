@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+
+    <link rel="stylesheet" href="/static/css/bootstrap-3.3.6.min.css">
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/layui/layui.all.js"></script>
+
+    <style type="text/css">
+      body{ background:darkcyan}
+      .form-horizontal{
+          background: #fff;
+          padding-bottom: 40px;
+          border-radius: 15px;
+          text-align: center;
+      }
+      .form-horizontal .heading{
+          padding: 20px 0;
+          border-bottom: 1px solid #f0f0f0;
+          margin-bottom: 30px;
+      }
+      .form-horizontal .form-group{
+          padding: 0 40px;
+          margin: 0 0 25px 0;
+          position: relative;
+      }
+      .form-horizontal .form-control{
+          background: #f0f0f0;
+          border: none;
+          border-radius: 20px;
+          box-shadow: none;
+          padding: 0 20px 0 45px;
+          height: 40px;
+          transition: all 0.3s ease 0s;
+      }
+      .form-horizontal .form-control:focus{
+          background: #e0e0e0;
+          box-shadow: none;
+          outline: 0 none;
+      }
+      .form-horizontal .form-group i{
+          position: absolute;
+          top: 12px;
+          left: 60px;
+          font-size: 17px;
+          color: #c8c8c8;
+          transition : all 0.5s ease 0s;
+      }
+      .form-horizontal .form-control:focus + i{
+          color: #00b4ef;
+      }
+      .form-horizontal .fa-question-circle{
+          display: inline-block;
+          position: absolute;
+          top: 12px;
+          right: 60px;
+          font-size: 20px;
+          color: #808080;
+          transition: all 0.5s ease 0s;
+      }
+      .form-horizontal .fa-question-circle:hover{
+          color: #000;
+      }
+      .form-horizontal .main-checkbox{
+          float: left;
+          width: 20px;
+          height: 20px;
+          background: #11a3fc;
+          {#border-radius: 50%;#}
+          position: relative;
+          margin: 5px 0 0 5px;
+          border: 1px solid #11a3fc;
+      }
+      .form-horizontal .main-checkbox label{
+          width: 20px;
+          height: 20px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          cursor: pointer;
+      }
+      .form-horizontal .main-checkbox label:after{
+          content: "";
+          width: 10px;
+          height: 5px;
+          position: absolute;
+          top: 5px;
+          left: 4px;
+          border: 3px solid #fff;
+          border-top: none;
+          border-right: none;
+          background: transparent;
+          opacity: 0;
+          -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+      }
+      .form-horizontal .main-checkbox input[type=checkbox]{
+          visibility: hidden;
+      }
+      .form-horizontal .main-checkbox input[type=checkbox]:checked + label:after{
+          opacity: 1;
+      }
+      .form-horizontal .text{
+          float: right;
+          margin-left: 7px;
+          line-height: 20px;
+          padding-top: 5px;
+          text-transform: capitalize;
+      }
+      .form-horizontal .btn{
+          float: right;
+          font-size: 14px;
+          color: #fff;
+          background: #00b4ef;
+          {#border-radius: 30px;#}
+          padding: 10px 25px;
+          border: none;
+          text-transform: capitalize;
+          transition: all 0.5s ease 0s;
+      }
+      .captcha img{
+          height: 40px;
+          width: 100px;
+          border-radius: 5px;
+      }
+      .captcha input{
+          display: none;
+      }
+      @media only screen and (max-width: 479px){
+          .form-horizontal .form-group{
+              padding: 0 25px;
+          }
+          .form-horizontal .form-group i{
+              left: 45px;
+          }
+          .form-horizontal .btn{
+              padding: 10px 20px;
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="htmleaf-container">
+      <div class="demo form-bg" style="padding: 150px 0;">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-md-offset-3 col-md-6">
+                          <form class="form-horizontal layui-form" action="" method="POST">
+                              {% csrf_token %}
+                              <div class="heading">
+                                  <h1 style="font-weight: bolder">登录</h1>
+                                  <p class="layui-text-center">用 户 系 统</p>
+                              </div>
+
+                              <div class="form-group">
+                                  <input type="text" class="form-control" name="username" id="username" placeholder="用户名" lay-verify="required">
+                                  <i class="layui-icon layui-icon-username"></i>
+                              </div>
+
+                              <div class="form-group help">
+                                  <input type="password" class="form-control" name="password" id="password" placeholder="密　码" lay-verify="required">
+                                  <i class="layui-icon layui-icon-password"></i>
+                              </div>
+
+                              <div class="form-group" style="display: flex; justify-content: space-between;">
+                                  <input type="text" class="form-control" name="verify" id="verify" placeholder="验证码" lay-verify="required">
+                                  <i class="layui-icon layui-icon-vercode"></i>
+                                  <div class="captcha">{{ login_form.captcha }}</div>
+                              </div>
+
+                              <div class="form-group">
+                                  <button type="submit" class="btn btn-default" lay-submit lay-filter="formDemo">登录</button>
+                                  <a href="javascript:void (0)" style="float: left;line-height: 40px;" onclick="passwordForget()">忘记密码？</a>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+      </div>
+    </div>
+    <script>
+        function passwordForget() {
+            layer.open({
+                content: '忘记密码请联系管理员',
+                btn: ['取消', '确定']
+            })
+        }
+        layui.use('form', function() {
+            var form = layui.form;
+
+            //各种基于事件的操作，下面会有进一步介绍
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                $.ajax({
+                    url: '',
+                    type: 'post',
+                    data: data.field,
+                    dataType: 'json',
+                    success: (res) => {
+                        if (res.code) {
+                            layer.msg(res.msg);
+                        } else {
+                            setTimeout(function () {
+                               location.href = '/'
+                            });
+                            layer.msg('操作成功');
+                        }
+                        refresh();
+                    },
+                    error: (err) => {
+                        layer.msg(JSON.stringify(err))
+                    }
+                });
+                return false;
+            });
+
+
+            $('.captcha').on('click', function () {
+                refresh()
+            });
+
+            function refresh() {
+                $.getJSON("../captcha/refresh/", function (result) {
+                    if (!result.code) {
+                        $('.captcha img').attr('src', result.data.src);
+                        $('input[name="captcha_0"]').val(result.data.key);
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                });
+            }
+        });
+    </script>
+  </body>
+</html>

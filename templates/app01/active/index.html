@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/layui/layui.js"></script>
+    <link rel="stylesheet" href="/static/plugins/layui/css/modules/laydate/default/laydate.css"></linkr>
+
+    <style>
+        .uploader-list {
+            margin-left: -15px;
+        }
+
+        .uploader-list .info {
+            position: relative;
+            margin-top: -25px;
+            background-color: black;
+            color: white;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+            width: 100px;
+            height: 25px;
+            text-align: center;
+            {#display: none;#}
+        }
+
+        .uploader-list .handle {
+            position: relative;
+            background-color: black;
+            color: white;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+            width: 100px;
+            text-align: right;
+            height: 18px;
+            margin-bottom: -18px;
+            {#display: none;#}
+        }
+
+        .uploader-list .handle i {
+            margin-right: 5px;
+        }
+
+        .uploader-list .handle i:hover {
+            cursor: pointer;
+        }
+
+        .uploader-list .file-iteme {
+            {#margin: 12px 0 0 15px;#}
+            padding: 1px;
+            float: left;
+        }
+        #active-list .active-item {
+
+        }
+        #active-list .active-item .active-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #active-list .active-item .active-item-content {
+            word-wrap: break-word;
+            word-break: break-all;
+            padding: 5px;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <strong><em>{{ title }}</em></strong>
+            <p>{{ detail }}</p>
+        </div>
+        <div class="panel-body">
+            <div class="content">
+                <form class="layui-form" action="" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                    {% csrf_token %}
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <textarea class="layui-textarea" name="content" id="content" cols="10" rows="0" required="required" placeholder="说点什么..."></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="height: 0;">
+                        <div class="layui-input-block" style="height: 0; min-height: 0px;">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo"
+                                    style="position: absolute; top: -196px; right: -8px;">发表
+                            </button>
+                        </div>
+                    </div>
+                    <div class="layui-form-item hidden" id="image">
+                        <input type="hidden" name="image_path">
+                        <div class="layui-form-item">
+                            <div class="layui-upload-list uploader-list" id="uploader-list" style="display: inline-block;margin: 0;">
+                                <input type="button" class="layui-btn layui-bg-blue file-iteme" id="upload_img" value="添加图片" style="height: 100px; width: 100px;">
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+                </form>
+                <hr>
+                <div id="active-list">
+{#                    <div class="active-item">#}
+{#                        <div class="header active-item-header">#}
+{#                            <span >admin</span>#}
+{#                            <span style="display: inline-block; width: 100%;margin: 0 20px;"><hr></span>#}
+{#                            <span style="display: inline-block; width: 160px;">2020-10-20 18:00:00</span>#}
+{#                        </div>#}
+{#                        <div class="layui-form-item;">#}
+{#                            <div style="word-wrap:break-word; word-break:break-all; padding: 5px;">#}
+{#jflajfkdajlfdajwkjqnkjeqnjekrnwrkjqnrkjqnwkj wrhwwqrhkqjwjehwkjreqkjbnrkjqnbrjnqwjkfnkjqnfjqnfkjqenffffffffffffffffqewjklfnuqnfrequn u#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="layui-form-item">#}
+{#                            <div class="layui-upload-list uploader-list" style="margin: 0;">#}
+{#                                <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <hr>#}
+{#                    <div>#}
+{#                        <div class="header" style="display: flex; justify-content: space-between; align-items: center;">#}
+{#                            <span >admin</span>#}
+{#                            <span style="display: inline-block; width: 100%;margin: 0 20px;"><hr></span>#}
+{#                            <span style="display: inline-block; width: 160px;">2020-10-20 18:00:00</span>#}
+{#                        </div>#}
+{#                        <div class="layui-form-item;">#}
+{#                            <div style="word-wrap:break-word; word-break:break-all; padding: 5px;">#}
+{#jflajfkdajlfdajwkjqnkjeqnjekrnwrkjqnrkjqnwkj wrhwwqrhkqjwjehwkjreqkjbnrkjqnbrjnqwjkfnkjqnfjqnfkjqenffffffffffffffffqewjklfnuqnfrequn u#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="layui-form-item">#}
+{#                            <div class="layui-upload-list uploader-list" style="margin: 0;">#}
+{#                                <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            <div class="file-iteme">#}
+{#                                <img style="width: 100px;height: 100px;" src="/static\upload\still\jpg\timg.jpg" onclick="preview(this)">#}
+{#                            </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <hr>#}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var urls = []; //图片地址
+    var num = 9; //限制图片数量
+    var limit = 10;//请求数据数量
+    var a_id = 0;
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form;
+        var upload = layui.upload;
+
+
+        upload.render({
+            elem: '#upload_img',
+            url: '/upload/rimage/',
+            multiple: true,
+            before: (obj) => {
+                // 检测上传图片数量 小于等于 9张，否则改按钮小时
+                if (checkUpload() === true) return;
+                layer.msg('图片上传中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: 1
+                })
+            },
+            done: (res) => {
+                if (!res.code) {
+                    let url = '';
+                    let length = 0;
+                    for (let i = 0; i < res.data.length; i++) {
+                        url = res.data[i].trim();
+                        if (url && urls.indexOf(url) === -1) {
+                            if (checkUpload() === true) return;
+                            length = urls.length;
+                            urls.push(url);
+                            //上传完毕
+                            {#$('#uploader-list').append(#}
+                            {#    `<div id="" class="file-iteme">#}
+                            {#        <div class="handle" onclick="remove(this)" data-index = "${length}"><i class="layui-icon layui-icon-delete"></i></div>#}
+                            {#        <img style="width: 100px;height: 100px;" src='${url}' onclick="preview(this)">#}
+                            {#        <div class="info"> 第 ${urls.length} 图</div>#}
+                            {#    </div>`#}
+                            {#);#}
+                            $('#upload_img').before(
+                                `<div id="" class="file-iteme">
+                                    <div class="handle" onclick="remove(this)" data-index = "${length}"><i class="layui-icon layui-icon-delete"></i></div>
+                                    <img style="width: 100px;height: 100px;" src='${url}' onclick="preview(this)">
+                                    <div class="info"> 第 ${urls.length} 图</div>
+                                </div>`
+                            );
+                            fill_image_path();
+                        }
+                    }
+                }else {
+                    layui.msg(res.msg);
+                }
+            }
+        });
+
+        function checkUpload() {
+            let res = false;
+            if (urls.length >= num) {
+                $('#upload_img').css('display', 'none');
+                layer.msg('最多只能添加 ' + num + ' 张图片', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: 1000
+                });
+                res = true;
+            } else {
+                $('#upload_img').css('display', 'inline-block');
+            }
+            return res;
+        }
+
+        $('#content').change( function () {
+            if ($(this).val().trim()) {
+                $('#image').removeClass('hidden')
+            }else {
+                $('#image').addClass('hidden')
+            }
+        });
+
+
+        //各种基于事件的操作，下面会有进一步介绍
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            // layer.msg(JSON.stringify(data.field));
+            if (data.field.content.trim() === '') return layer.msg('说点什么吧');
+            $.ajax({
+                url: '{{form_url}}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: (res) => {
+                    layer.msg('操作成功');
+                    if (!res.code) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000)
+                    }
+                },
+                error: (err) => {
+                    layer.msg(JSON.stringify(err))
+                }
+            });
+            return false;
+        });
+
+        //鼠标滚动
+        window.onscroll = function () {
+            var marginBot = 0;
+            if (document.documentElement.scrollTop) {
+                marginBot = document.documentElement.scrollHeight - (document.documentElement.scrollTop + document.body.scrollTop) - document.documentElement.clientHeight;
+            } else {
+                marginBot = document.body.scrollHeight - document.body.scrollTop - document.body.clientHeight;
+            }
+            if (marginBot <= 0) {
+                console.log('到达底部，加载数据中......');
+                loadData(a_id)
+            }
+            if ($(window).scrollTop() === 0) {
+                console.log('滚动顶部，加载数据中......');
+                {#location.reload();#}
+                loadData(0)
+            }
+        };
+
+        function buildElement(data) {
+            if (data.length) {
+                let parent = $('#active-list');
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    a_id = item.id;
+                    let ele = `<div class="active-item">
+                        <div class="header active-item-header">
+                            <span>${item.operator__username}</span>
+                            <span style="display: inline-block; width: 100%;margin: 0 20px;"><hr></span>
+                            <span style="display: inline-block; width: 160px;">${item.pub_date}</span>
+                        </div>
+                        <div class="layui-form-item;">
+                            <div class="active-item-content">${item.content}</div>
+                        </div>
+                        <div class="layui-form-item">`;
+                    let image_path = item.image_path.split(';');
+                    image_path = image_path.filter(function (s) {
+                        return s && s.trim()
+                    });
+                    for (let j = 0; j < image_path.length; j++) {
+                        ele += `<div class="layui-upload-list uploader-list" style="margin: 0;">
+                                <div class="file-iteme">
+                                <img style="width: 100px;height: 100px;" src="${image_path[j]}" onclick="preview(this)">
+                            </div>`
+                    }
+
+                     ele += `</div>
+                        </div>
+                    </div>
+                    <hr>`;
+                    parent.append(ele)
+                }
+            }
+        }
+
+        //加载数据
+        function loadData(id) {
+            $.ajax({
+                url: '{{form_url_get}}',
+                type: 'post',
+                data: {limit: limit, a_id : id},
+                dataType: 'json',
+                success: (res) => {
+                    if (!id) {
+                        a_id = 0;
+                        $('#active-list').empty();
+                    }
+                    if (!res.code) {
+                        buildElement(res.data);
+                    }
+                    layer.msg(res.msg);
+                },
+                error: (err) => {
+                    layer.msg(JSON.stringify(err))
+                }
+            });
+        }
+
+        // 加载数据
+        loadData(a_id);
+    });
+
+    //remove
+    function remove(obj) {
+        console.log('obj', obj);
+        let self = $(obj);
+        console.log('self', self);
+        layer.confirm('确定删除？', function (index) {
+            urls.splice(self.data('index'), 1);
+            $('#upload_img').css('display', 'inline-block');
+            self.parent().remove();
+            layer.close(index);
+            fill_image_path();
+        })
+    }
+
+    //将图片地址拼接，路径之间用英文状态下的 ";" 分隔
+    function fill_image_path() {
+        var element = $('input[name="image_path"]');
+        console.log('element', element)
+        let arr = urls.filter(function (s) {
+            return s && s.trim()
+        });
+        console.log('arr', arr);
+        element.val(arr.join(';'));
+    }
+
+    //preview
+    function preview(ele) {
+        layer.open({
+          type: 2,
+          area: ['90%', '600px'],
+          fixed: false, //不固定
+          maxmin: true,
+          content: $(ele).attr('src'),
+          title: '预览',
+          success: (layro, index) => {
+              layer.iframeAuto(index)
+          }
+        }, function(value, index) {
+        layer.close(index);
+      });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堡垒机</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    {#    <link rel="stylesheet" href="/static/plugins/layui/css/modules/code.css">#}
+    <link rel="stylesheet" href="/static/plugins/layui/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="/static/plugins/layui/css/modules/layim/layim.css">
+    <link rel="stylesheet" href="/static/plugins/layui/css/menu.css">
+    <script src="/static/js/jquery-2.2.1.min.js"></script>
+    {#    <script src="/static/js/jquery.min.js"></script>#}
+    <script src="/static/plugins/layui/layui.js"></script>
+</head>
+<body>
+<div class="site-text">
+    <ul class="layui-nav layui-bg-cyan" style="left: 0; background-color: inherit">
+        <li class="layui-nav-item layui-this"><a href="/home/" target="menuFrame">首&nbsp;&nbsp;&nbsp;&nbsp;页</a></li>
+        <li class="layui-nav-item"><a href="/active/" target="menuFrame">动&nbsp;&nbsp;&nbsp;&nbsp;态</a></li>
+        <li class="layui-nav-item"><a href="/blog/" target="menuFrame">博&nbsp;&nbsp;&nbsp;&nbsp;客</a></li>
+        <li class="layui-nav-item"><a href="/attachment/" target="menuFrame">附&nbsp;&nbsp;&nbsp;&nbsp;件</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">Bug管理<span class="layui-nav-more"></span></a>
+            <dl class="layui-nav-child layui-anim layui-anim-upbit">
+                <dd><a href="javascript:void(0);">日程</a></dd>
+                <dd><a href="javascript:void(0);">任务</a></dd>
+                <dd><a href="javascript:void(0);">Bug</a></dd>
+                <dd><a href="javascript:void(0);">项目</a></dd>
+                <dd><a href="javascript:void(0);">动态</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item"><a href="/command/" target="menuFrame">控制台<i class="layui-badge-dot"></i></a></li>
+        <li class="layui-nav-item"><a href="/sftp/" target="menuFrame">SFTP</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:void(0);"><img src="/static/images/100.png" class="layui-nav-img">我<span
+                    class="layui-nav-more"></span></a>
+            <dl class="layui-nav-child">
+                <dd><a href="javascript:;">修改信息</a></dd>
+                <dd><a href="javascript:;">安全管理</a></dd>
+                <dd><a href="/logout/">退了</a></dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+
+<div class="content-wrapper">
+    <section class="content container-fluid">
+        <iframe id="menuFrame" name="menuFrame" src="/home" style="overflow:visible;" scrolling="yes" frameborder="no"
+                height="100%" width="100%"></iframe>
+    </section>
+</div>
+
+
+<script>
+    $("#menuFrame").height($(window).height() - $('.site-text').height());
+
+    // 自定义模块
+    layui.extend({
+        menu: '/static/plugins/layui/lay/modules/menu'
+    });
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'layim', 'menu'], function () {
+
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var layim = layui.layim;
+        var menu = layui.menu;
+
+        layim.config({
+            //基础配置
+            init: {
+                url: '/chat/', // 接口地址
+                type: 'get',
+                data: {}
+            }, //获取主面板列表信息，下文会做进一步介绍
+
+            title: '{{ chat.title }}', // 标题
+            isAudio: true, // 是否开启聊天工具栏音频
+            isVideo: true, // 是否开启开启聊天工具栏视频
+            notice: true, // 是否开启桌面消息提醒，即在浏览器之外的提醒
+
+            //获取群员接口（返回的数据格式见下文）
+            members: {
+                url: '/chat/group/users/', //接口地址（返回的数据格式见下文）
+                type: 'get', //默认get，一般可不填
+                data: {}, //额外参数
+            },
+
+            //上传图片接口（返回的数据格式见下文），若不开启图片上传，剔除该项即可
+            uploadImage: {
+                url: '/upload_image_lay/', //接口地址
+                type: 'post', //默认post
+            },
+
+            //上传文件接口（返回的数据格式见下文），若不开启文件上传，剔除该项即可
+            uploadFile: {
+                url: '', //接口地址
+                type: 'post', //默认post
+            },
+            //扩展工具栏，下文会做进一步介绍（如果无需扩展，剔除该项即可）
+            tool: [{
+                alias: 'code', //工具别名
+                title: '代码', //工具名称
+                icon: '&#xe64e;', //工具图标，参考图标文档
+            }],
+
+            {#msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html', //消息盒子页面地址，若不开启，剔除该项即可#}
+            msgbox: '/chat/msgbox', //消息盒子页面地址，若不开启，剔除该项即可
+            {#find: layui.cache.dir + 'css/modules/layim/html/find.html', //发现页面地址，若不开启，剔除该项即可#}
+            find: '/chat/find/', //发现页面地址，若不开启，剔除该项即可
+            chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html', //聊天记录页面地址，若不开启，剔除该项即可
+        });
+
+
+        {#console.log('dir', layui.cache.dir); // /static/plugins/layui/#}
+        {#console.log('cache', layim.cache()); // /static/plugins/layui/#}
+
+        layim.on('tool(code)', function (insert, send, obj) { //事件中的tool为固定字符，而code则为过滤器，对应的是工具别名（alias）
+            layer.prompt({
+                title: '插入代码'
+                , formType: 2
+                , shade: 0
+            }, function (text, index) {
+                layer.close(index);
+                insert('[pre class=layui-code]' + text + '[/pre]'); //将内容插入到编辑器，主要由insert完成
+                //send(); //自动发送
+            });
+            console.log('this==', this); //获取当前工具的DOM对象
+            console.log('obj---', obj); //获得当前会话窗口的DOM对象、基础信息
+        });
+
+        // 监听在线状态的切换事件
+        layim.on('online', function (status) {
+            layer.msg(status)
+        });
+
+        // 监听签名修改
+        layim.on('sign', function (value) {
+            layer.msg(value);
+        });
+
+        // 监听layim建立就绪
+        layim.on('ready', function (res) {
+            console.log('ready', res);
+            // 菜单初始化
+            menu.init({
+                menu: [
+                    {
+                        id: 1,
+                        ele: 'li[data-type="friend"]',
+                        items: [
+                            {text: '即时聊天', name: 'chat', icon: '', group: 'g1'},
+                            {text: '历史记录', name: 'history', icon: '', group: 'g1'},
+                            {text: '删除好友', name: 'delete', icon: 'ဇ', group: 'g3'},
+                            {
+                                text: '移动至', group: 'g2', child: [
+                                    {text: '我的好友', name: 'myfriend', icon: ''},
+                                    {text: '大学同学', name: 'collage', icon: ''},
+                                    {text: '公司同事', name: 'worker', icon: ''}
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        id: 2,
+                        ele: 'li[data-type="group"]',
+                        items: [
+                            {text: '即时聊天', name: 'chat', group: 'g1'},
+                            {text: '历史记录', name: 'history', group: 'g1'},
+                            {text: '屏蔽消息', name: 'delete', group: 'g1'},
+                            {text: '解散群', name: 'delete', group: 'g1'},
+                            {text: '转移群', name: 'delete', group: 'g1'},
+                        ]
+                    },
+                    {
+                        id: 3,
+                        ele: 'h5',
+                        items: [
+                            {text: '删除分组', name: 'chat', group: 'g1'},
+                            {text: '刷新好友', name: 'history', group: 'g1'},
+                            {text: '修改名称', name: 'delete', group: 'g1'}
+                        ]
+                    }
+                ]
+            });
+        });
+
+        // 监听发送消息
+        layim.on('sendMessage', function (data) {
+            console.log('sendMessage', data);
+            send({
+                type: data.to.type + '_chat',
+                data: {
+                    id: data.to.id,
+                    content : data.mine.content
+                }
+            })
+        });
+
+        // 监听查看群员
+        layim.on('members', function (data) {
+            console.log('members', data);
+        });
+
+        // 监听聊天窗口切换
+        layim.on('chatChange', function (res) {
+            console.log('chatChange', res);
+            var type = res.data.type;
+            if (type === 'friend') {
+                // 查询玩家是否在线
+                send({type: 'friend_status', data: {id: res.data.id}});
+                {#layim.setChatStatus('<span style="color:#FF5722;">在线</span>'); //模拟标注好友在线状态#}
+            } else if (type === 'group') {
+                //模拟系统消息
+                /*
+                layim.getMessage({
+                    system: true //系统消息
+                    , id: 111111111
+                    , type: "group" // 系统通知
+                    {#, type: "friend"#} // 临时会话
+                    , content: '贤心加入群聊'
+                });
+                */
+            }
+        });
+
+        // 弹出添加面板
+        window.getFind = function (id, i, m, type) {
+            console.log('parent','id=',id, i, 'm = ', m, 'type = ', type);
+            layim.add({
+                type: type, //friend：申请加好友、group：申请加群
+                username: i, //好友昵称，若申请加群，参数为：groupname
+                avatar: m, //头像
+                submit: function (group, remark, index) { //一般在此执行Ajax和WS，以通知对方
+                    console.log(group); //获取选择的好友分组ID，若为添加群，则不返回值
+                    console.log(remark); //获取附加信息
+                    layer.close(index); //关闭改面板
+                    // 发送申请
+                    send({
+                        type: type + '_add',
+                        data: {
+                            id: id,
+                            group: group,
+                            content: remark
+                        }
+                    })
+                }
+            });
+        };
+
+        //
+        window.updatePanels = function (data) {
+            console.log('updatePanels', data);
+            data.type = type ? 'group' : 'friend';
+            layim.addList()
+        };
+
+
+        // 好友分组面板
+        /*
+        layim.setFriendGroup({
+            type: 'friend',
+            username: 'xxx', //好友昵称，若申请加群，参数为：groupname
+            avatar: 'a.jpg', //头像
+            group: layim.cache().friend, //获取好友列表数据
+            submit: function (group, index) {
+                //一般在此执行Ajax和WS，以通知对方已经同意申请
+                //……
+
+                //同意后，将好友追加到主面板
+                layim.addList(data); //见下文
+            }
+        });
+        */
+
+        // 添加好友/群到主面板，当你的WebSocket监听到有好友或者群新增时，需让LayIM的主面板同步添加的信息
+
+        /*
+        // 群聊
+        layim.addList({
+            type: 'group',
+            avatar: 'a.jpg',
+            groupname: 'Angular开发', //群组名称
+            id: '123456',// 群组id
+        });
+        */
+
+        // 从主板移除好友/群
+        /*
+        layim.removeList({
+            type: 'friend' //或者group
+            ,id: 1238668 //好友或者群组ID
+        });
+        //如果是在iframe页，如LayIM设定的add面板，则为：
+        parent.layui.layim.removeList({
+            type: 'friend' //或者group
+            ,id: 1238668 //好友或者群组ID
+        });
+        */
+
+
+        // 删除本地数据
+        /*
+        var cache = layui.layim.cache();
+        var local = layui.data('layim')[cache.mine.id];
+        console.log('cache', cache);
+        console.log('local', local);
+
+        // 删除本地料条件记录为例
+        delete local.chatlog;
+        // 向localStorage同步数据
+        layui.data('layim', {
+            key: cache.mine.id,
+            value: local,
+        });
+        */
+
+        // 建立WebSocket通讯
+        var socket = new WebSocket('ws://127.0.0.1:{{ http.port }}/ws/app01/');
+
+        // 连接成功
+        socket.onopen = function () {
+
+        };
+
+        // 监听收到消息
+        socket.onmessage = function (res) {
+            console.log('socket onmessage', typeof res, res);
+            let data = JSON.parse(res.data);
+            if (data.type === 'chatMessage') {
+                console.log('---data', data.data);
+                layim.getMessage(data.data);
+            }else if (data.type === 'friendStatus') {
+                console.log('status---', data);
+                if (data.data.content === 'online') {
+                    layim.setChatStatus('<span style="color:#FF5722;">在线</span>'); //模拟标注好友在线状态
+                }else {
+                    layim.setChatStatus('<span style="color:#bbbbbb;">离线</span>'); //模拟标注好友在线状态
+                }
+                layim.setFriendStatus(data.data.id, data.data.content);
+                // 实时更新好友列表离线状态
+                //layim.setFriendStatus(123456, 'online'); //设置好友在线 offline 离线
+            }else if (data.type === 'agreeFriend') {
+                 // 好友
+                /*
+                layim.addList({
+                    type: 'friend', //列表类型，只支持friend和group两种
+                    avatar: "a.jpg", //好友头像
+                    username: '冲田杏梨', //好友昵称
+                    groupid: 3, //所在的分组id
+                    id: "1233333312121212", //好友id
+                    sign: "本人冲田杏梨将结束AV女优的工作", //好友签名
+                });
+                */
+                layim.addList(data.data);
+            }
+        };
+
+        socket.onerror = function (res) {
+            console.log('socket onerror', res);
+        };
+
+        socket.onclose = function (res) {
+            console.log('socket onclose', res);
+        };
+
+        // 发送消息
+        window.send = function (data) {
+            // data = {type: 'chatMessage', data: res}
+            console.log('data=====', data);
+            socket.send(JSON.stringify(data));
+        };
+
+        //监听导航点击
+        element.on('nav(demo)', function (elem) {
+            //console.log(elem)
+            layer.msg(elem.text());
+        });
+    });
+</script>
+</body>
+</html>

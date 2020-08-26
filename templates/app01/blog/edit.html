@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/layui/layui.js"></script>
+
+    <style>
+        body::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <strong><em>{{ title }}</em></strong>
+            <p>{{ detail }}</p>
+        </div>
+        <div class="panel-body">
+            <div class="content">
+                <form class="layui-form" action="" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                    {% csrf_token %}
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <input type="hidden" name="{{ data.id }}">
+                            <input class="layui-input" type="text" title="标题" name="title" placeholder="请输入标题" lay-verify="required" autocomplete="off" value="{{ data.title }}" {% if edition != 1 %}disabled{% endif %}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <textarea id="demo" style="display: none;" name="content"></textarea>
+                            <input id="reverse" type="hidden" value="{{ data.content }}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <input type="radio" name="public" value="1" title="公开" {% if data.public == 1 %}checked{% endif %} {% if edition != 1 %}disabled{% endif %}>
+                            <input type="radio" name="public" value="0" title="不公开" {% if data.public == 0 %}checked{% endif %} {% if edition != 1 %}disabled{% endif %}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <input class="layui-input" type="text" name="" value="{{ data.pub_date }}" title="发表日期" disabled>
+                        </div>
+                    </div>
+                    <div class="layui-form-item {% if edition != 1 %}hidden{% endif %}">
+                        <div class="layui-form-item">
+                            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                        </div>
+                    </div>
+                    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    layui.use(['form', 'layedit'], function () {
+        var form = layui.form;
+        var layedit = layui.layedit;
+
+
+        layedit.set({
+           uploadImage: {
+               url: '{{ upload_url }}',
+               type: 'post'
+           }
+        });
+        var index = layedit.build('demo', {
+            tool: [
+                 'strong', //加粗
+                  'italic', //斜体
+                  'underline', //下划线
+                  'del', //删除线
+                  '|', //分割线
+                  'left', //左对齐
+                  'center', //居中对齐
+                  'right', //右对齐
+                  'link', //超链接
+                  'unlink', //清除链接
+                  'face', //表情
+                  'image', //插入图片
+                  'help', //帮助
+            ],
+            height: 500,
+        });
+        {#let chard = $('#reverse').val()#}
+        layedit.setContent(index, $('#reverse').val(), false);
+
+
+        //各种基于事件的操作，下面会有进一步介绍
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            console.log('getContent',layedit.getContent(index));
+            data.field['content'] = layedit.getContent(index);
+            if (data.field.content.trim() === '') return layer.msg('说点什么吧');
+            $.ajax({
+                url: '{{form_url}}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: (res) => {
+                    layer.msg('操作成功');
+                    if (!res.code) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000)
+                    }
+                },
+                error: (err) => {
+                    layer.msg(JSON.stringify(err))
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

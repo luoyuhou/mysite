@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/plugins/layui/layui.js"></script>
+    <link rel="stylesheet" href="/static/plugins/layui/css/modules/laydate/default/laydate.css"></linkr>
+
+    <style>
+        .layui-form-label{
+            width: 90px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <strong><em>{{title}}</em></strong>
+            <p>{{detail}}</p>
+        </div>
+        <div class="panel-body">
+            <div class="content">
+        <form class="layui-form" action="" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+            {% for el in form %}
+            <div class="layui-form-item {{el.hidden}} {{el.id}}">
+                <label class="layui-form-label">{{el.label}}</label>
+                <div class="layui-input-block" id="{{el.id}}">
+                    {% for item in el.element %}
+                    {% if item.elem == 'input' %}
+                    <!--          input start          -->
+                    {% if item.type == 'radio' %}
+                    {% for val in item.value %}
+                    {% if val.checked == 1 %}
+                    <input type="radio" name="{{item.name}}" value="{{val.val}}" title="{{val.title}}" checked>
+                    {% else %}
+                    <input type="radio" name="{{item.name}}" value="{{val.val}}" title="{{val.title}}">
+                    {% endif %}
+                    {% endfor %}
+
+                    {% elif item.type == 'checkbox' %}
+                    {% for val in item.value %}
+                    {% if val.checked == 1 %}
+                    <input type="checkbox" name="{{item.name}}" value="{{val.val}}" title="{{val.title}}" lay-verify="{{val.verify}}" lay-filter="{{val.filter}}" checked>
+                    {% else %}
+                    <input type="checkbox" name="{{item.name}}" value="{{val.val}}" title="{{val.title}}" lay-verify="{{val.verify}}" lay-filter="{{val.filter}}">
+                    {% endif %}
+                    {% endfor %}
+
+                    {% elif item.type == 'switch' %}
+                    <input type="checkbox" name="{{item.name}}" lay-skin="switch">
+
+                    {% elif item.type == 'button' %}
+                    <input id="{{ item.id }}" type="{{item.type}}" class="layui-btn" value="{{item.value.title}}" lay-verify="{{item.verify}}" lay-filter="{{item.filter}}">
+                    {% elif item.type == 'datetime' or item.type == 'date' or item.type == 'time' %}
+                    <input class="layui-input datetime" data-type = {{ item.type }} name="{{ item.name }}" lay-verify="{{val.verify}}" lay-filter="{{val.filter}}" autocomplete="off">
+                    {% else %}
+                    <input class="layui-input" type="{{item.type}}" name="{{item.name}}" value="{{item.value.val}}" placeholder="{{item.placeholder}}" lay-verify="{{item.verify}}" lay-filter="{{item.filter}}" autocomplete="off">
+                    {% endif %}
+                    <!--          input end          -->
+                    {% elif item.elem == 'select' %}
+                    <select name="{{item.name}}" lay-filter="{{item.name}}" lay-verify="{{item.verify}}" lay-filter="{{item.filter}}">
+                        <option value="">请选择</option>
+                    {{ item }}
+                        {% for val in item.value %}
+                        {% if val.selected %}
+                        <option value="{{val.id}}" selected>{{val.name}}</option>
+                        {% else %}
+                        <option value="{{val.id}}" >{{val.name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% elif item.elem == 'textarea' %}
+                    <textarea placeholder="{{item.placeholder}}" name="{{item.name}}" class="layui-textarea" lay-verify="{{item.verify}}" lay-filter="{{item.filter}}"></textarea>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
+                </div>
+            </div>
+            <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+        </form>
+    </div>
+        </div>
+    </div>
+</div>
+<script>
+  layui.use(['form','laydate', 'upload'], function(){
+      var form = layui.form;
+      var laydate = layui.laydate;
+
+      // 日期时间控件
+      var list = $('.datetime');
+      for (var i = 0; i < list.length; i++) {
+          var ele = $(list.eq(i));
+          laydate.render({
+              elem: 'input[name="' + ele.attr('name') + '"]',
+              min: 'new Date()',
+              max: "2099-06-16",
+              type: ele.data('type')
+          });
+      }
+
+      var upload = layui.upload;
+      upload.render({
+         elem: '#upload_img',
+         url: '/upload/rimage/',
+         accept: 'file',
+         done: (res) => {
+             if (!res.code) {
+                 var element = $('input[name="image_path"]');
+                 var value = element.val().split(';');
+                 for (let i = 0; i < res.data.length; i++) {
+                     if (value.indexOf(res.data[i]) === -1) value.push(res.data[i])
+                 }
+                 var path = value.filter(function (s) {
+                    return s && s.trim()
+                 });
+                 element.val(path.join(';'))
+             }
+             layer.msg(res.msg);
+         }
+      });
+
+
+
+    //各种基于事件的操作，下面会有进一步介绍
+    //监听提交
+    form.on('submit(formDemo)', function(data) {
+      // layer.msg(JSON.stringify(data.field));
+      $.ajax({
+        url: '{{form_url}}',
+        type: 'post',
+        data: data.field,
+        dataType: 'json',
+        success: (res) => {
+          if (res.errno) {
+            return layer.msg(res.errmsg);
+          }
+          layer.msg('操作成功');
+          setTimeout(function() {
+            location.reload();
+          }, 1000)
+        },
+        error: (err) => {
+          layer.msg(JSON.stringify(err))
+        }
+      });
+      return false;
+    });
+    let select = $('select');
+    $.each(select, (i,item) => {
+      let filter = $(item).attr('name');
+      if (filter) {
+        form.on('select('+filter+')', function(data) {
+          console.log(data);
+          console.log($(this));
+          $(this).val(data.value);
+        });
+      }
+    });
+
+  });
+</script>
+
+
+
+</body>
+</html>

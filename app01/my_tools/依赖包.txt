@@ -1,0 +1,7 @@
+pip install paramiko
+安装Twisted，地址：http://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted，下载到本地，然后 pip install 文件地址
+pip install -U channels
+pip install django-simple-captcha
+pip install numpy
+pip install channel-redis == 2.3.3
+pip install django-redis == 4.10.0

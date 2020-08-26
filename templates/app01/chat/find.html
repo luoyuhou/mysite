@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>发现</title>
+
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <style>
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .info-detail-item {
+            display: flex;
+            border: 1px solid skyblue;
+            padding: 2px;
+            margin: 0 2px 2px 0
+        }
+
+        .info-detail-item img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .info-detail-item .info {
+            margin: 0 5px;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .info-detail-item .info-detail-item-name {
+            font-size: 12px;
+            line-height: 35px;
+            width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        legend span {
+            color: #BBBBBB;
+            font-size: 16px;
+            font-weight: 300;
+            position: relative;
+            top: 13px;
+            background-color: white;
+            left: 20px;
+            padding: 0 5px;
+        }
+
+        .layui-card-body {
+            padding: 0;
+        }
+
+        .site-block {
+            padding: 20px 20px 0 20px;
+            border: 1px solid #eee;
+        }
+    </style>
+
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <strong><em>{{ title }}</em></strong>
+            <p>{{ detail }}</p>
+        </div>
+        <div class="panel-body">
+            <div class="site-text">
+                <div class="layui-tab layui-tab-card">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this col-xs-4">找人</li>
+                        <li class="col-xs-4">找群</li>
+                        <li class="col-xs-4">其他</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div>
+                                <div class="layui-form-item">
+                                    <input type="text" class="layui-input" id="username" placeholder="输入用户名">
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="text" class="layui-input" id="nickname" placeholder="输入昵称">
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="text" class="layui-input" id="user_id" placeholder="输入用户号">
+                                </div>
+                                <div class="layui-form-item" style="text-align:right;">
+                                    <input type="button" id="user-btn" class="btn btn-info" style="width: 20%;"
+                                           value="查询">
+                                </div>
+                                <hr>
+                                <div id="user-info">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div id="group-info">
+                                <div class="layui-form-item">
+                                    <input type="text" class="layui-input" id="groupname" placeholder="群名称">
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="text" class="layui-input" id="group_id" placeholder="输入群号">
+                                </div>
+                                <div class="layui-form-item" style="text-align:right;">
+                                    <input type="button" id="group-btn" class="btn btn-info" style="width: 20%;"
+                                           value="查询">
+                                </div>
+                                <hr>
+                                <div id="group-info">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-card-body">
+                                <div class="layui-tab layui-tab-brief" lay-filter="component-tabs-brief">
+                                    <ul class="layui-tab-title">
+                                        <li class="layui-this">好友分组</li>
+                                        <li>讨论组</li>
+                                        <li>待开发</li>
+                                    </ul>
+                                    <div class="layui-tab-content">
+                                        <!-- 好友 -->
+                                        <div class="layui-tab-item layui-show">
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>添加好友分组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <input type="text" name="create_group" class="layui-input"
+                                                           placeholder="好友分组名称">
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="create-group"
+                                                           value="创建分组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>修改好友分组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="group" name="modify_group_0" class="layui-input"
+                                                                lay-filter="group" lay-verify="required">
+                                                            <option value="">选择好友分组</option>
+                                                            {% for g in group %}
+                                                                <option value="{{ g.id }}">{{ g.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <input type="text" name="modify_group_1" class="layui-input"
+                                                           placeholder="修改后的名称">
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="modify-group"
+                                                           value="修改分组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>删除好友分组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="group" name="delete_group" class="layui-input"
+                                                                lay-filter="group" lay-verify="required">
+                                                            <option value="">选择好友分组</option>
+                                                            {% for g in group %}
+                                                                <option value="{{ g.id }}">{{ g.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="delete-group"
+                                                           value="删除分组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>移动好友</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="change_friend_0" name="change_friend_0"
+                                                                class="layui-input" lay-filter="group"
+                                                                lay-verify="required">
+                                                            <option value="">选择分组</option>
+                                                            {% for g in group %}
+                                                                <option value="{{ g.id }}">{{ g.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="user" name="user" class="layui-input" multiple
+                                                                lay-filter="group" lay-verify="required">
+                                                            <option value="">移动的好友</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="change_group_1" name="change_group_1"
+                                                                class="layui-input" lay-filter="group"
+                                                                lay-verify="required">
+                                                            <option value="">移入分组</option>
+                                                            {% for g in group %}
+                                                                <option value="{{ g.id }}">{{ g.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="delete-group"
+                                                           value="确认移动">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 讨论组 -->
+                                        <div class="layui-tab-item">
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>添加讨论组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <input type="text" name="create_queue" class="layui-input"
+                                                           placeholder="添加讨论组">
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="create-queue"
+                                                           value="创建讨论组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>修改讨论组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="group" name="modify_queue_0" class="layui-input"
+                                                                lay-filter="group" lay-verify="required">
+                                                            <option value="">选择讨论组</option>
+                                                            {% for g in queue %}
+                                                                <option value="{{ g.id }}">{{ g.group_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <input type="text" name="modify_queue_1" class="layui-input"
+                                                           placeholder="修改后的名称">
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="modify-queue"
+                                                           value="修改讨论组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>删除讨论组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="group" name="delete_queue" class="layui-input"
+                                                                lay-filter="group" lay-verify="required">
+                                                            <option value="">选择讨论组</option>
+                                                            {% for g in queue %}
+                                                                <option value="{{ g.id }}">{{ g.group_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="delete-queue"
+                                                           value="删除讨论组">
+                                                </div>
+                                            </div>
+                                            <div class="site-title">
+                                                <fieldset>
+                                                    <legend><span>离开讨论组</span></legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="site-block">
+                                                <div class="layui-form-item">
+                                                    <div class="layui-block">
+                                                        <select id="change_group_0" name="change_group_0"
+                                                                class="layui-input" lay-filter="group"
+                                                                lay-verify="required">
+                                                            <option value="">离开讨论组</option>
+                                                            {% for g in group %}
+                                                                <option value="{{ g.id }}">{{ g.group_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item" style="text-align:right;">
+                                                    <input type="button" class="btn btn-info" id="delete-group"
+                                                           value="确认移动">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 开发中 -->
+                                        <div class="layui-tab-item">
+                                            <pre>
+                                                敬请期待...
+                                            </pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/plugins/layui/layui.js"></script>
+<script>
+    layui.use(['layim', 'laypage', 'element'], function () {
+        var $ = layui.jquery;
+        var layim = layui.layim;
+        var user_id = {{ user_id }}
+
+        console.log('dir', layui.cache.dir); // /static/plugins/layui/
+        console.log('cache', layim.cache()); // /static/plugins/layui/
+
+        $('#user-btn').click(function () {
+            var username = $('#username').val().trim();
+            var nickname = $('#nickname').val().trim();
+            var user_id = $('#user_id').val().trim();
+            if (!user_id && !username && nickname) {
+                layui.msg('请输入需要查询的用户信息');
+                return false;
+            }
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: {type: 0, username: username, nickname: nickname, user_id: user_id},
+                success: (res) => {
+                    if (!res.code) {
+                        buildElement(res.data, $('#user-info'), 'findUser');
+                        return;
+                    }
+                    layui.msg(res.msg);
+                }
+            })
+        });
+
+        $('#group-btn').click(function () {
+            var groupname = $('#groupname').val().trim();
+            var group_id = $('#group_id').val().trim();
+            if (!groupname && !group_id) {
+                layui.msg('请输入需要查询的群信息');
+                return false;
+            }
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: {type: 1, groupname: groupname, group_id: group_id},
+                success: (res) => {
+                    if (!res.code) {
+                        buildElement(res.data, $('#group-info'), 'findGroup');
+                        return;
+                    }
+                    layui.msg(res.msg)
+                }
+            })
+        });
+
+        function buildElement(array, parent, fun) {
+            parent.empty();
+            let length = array.length;
+            let element = `<p>找到 ${length} 条记录</p>`;
+            for (let i = 0; i < array.length; i++) {
+                let item = array[i];
+                element += `<div style="display:inline-block;">
+                                <div class="info-detail-item">
+                                    <div>
+                                        <img src="${item.avatar}" alt="">
+                                    </div>
+                                    <div class="info">
+                                        <p class="info-detail-item-name">${item.name}</p>`;
+                if (user_id == item.id) {
+                    element += `<input type="button" class="btn btn-sm" value="加好友" onclick="${fun}('${item.id}', '${item.name}','${item.avatar}')" disabled>`
+                }else {
+                    element += `<input type="button" class="btn btn-sm" value="加好友" onclick="${fun}('${item.id}', '${item.name}','${item.avatar}')">`
+                }
+                element += '</p></div></div></div>';
+            }
+            parent.append(element);
+        }
+
+        $('#create-group').click(function () {
+            let groupname = $('input[name="create_group"]').val().trim();
+            if (!groupname) {
+                layui.msg('好友分组不能为空');
+                return false;
+            }
+            $.ajax({
+                url: '/chat/friend/',
+                type: 'post',
+                data: {'groupname': groupname, type: 1},
+                success: (res) => {
+                    if (!res.code) {
+                        res.data.list = [];
+                        var indexNow = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.location.reload();
+                        parent.layer.close(indexNow);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+            })
+        });
+    });
+
+    $('#create-queue').click(function () {
+        let groupname = $('input[name="create_queue"]').val().trim();
+            if (!groupname) {
+                layui.msg('好友分组不能为空');
+                return false;
+            }
+            $.ajax({
+                url: '/chat/group/',
+                type: 'post',
+                data: {'groupname': groupname, type: 1},
+                success: (res) => {
+                    if (!res.code) {
+                        var indexNow = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.location.reload();
+                        parent.layer.close(indexNow);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+            })
+    });
+
+    function findUser(id, i, m) {
+        func(id, i, m)
+    }
+
+    function findGroup(id, i, m) {
+        func(id, i, m, 'group')
+    }
+
+    /**
+     * 将id返回个父页面
+     * @param id 操作的用户
+     * @param i 操作的用户
+     * @param m 操作的用户
+     * @param type 0 添加好友，1 加群
+     */
+    function func(id, i, m, type = 'friend') {
+        var indexNow = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        if (parent.getFind) {
+            parent.getFind(id, i, m, type);
+            parent.layer.close(indexNow);
+        } else {
+            layer.msg('请勿直接操作当前页面');
+        }
+    }
+
+    $('#change_friend_0').change(function () {
+        var fid = $(this).val();
+        $.ajax({
+                url: '/chat/friend/',
+                type: 'post',
+                data: {'fid': fid, type: 2},
+                success: (res) => {
+                    if (!res.code) {
+                        var friend = $('#user');
+                        friend.empty();
+                        friend.append('<option value="">选择分组</option>');
+                        for (let i = 0; i < res.count; i++) {
+                            var item = res.data[i];
+                            friend.append(`<option value=${item.id}>${item.friend__username}</option>`);
+                        }
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+            })
+    })
+</script>
+</body>
+</html>
