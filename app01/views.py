@@ -389,8 +389,8 @@ def active(request):
     if request.method == 'POST':
         content = request.POST.get('content', None)
         image_path = request.POST.get('image_path', '')
-        account_id = 1
-        operator = Account.objects.get(id=account_id)
+        user_id = json.loads(request.session[SESS_CONFIG['key']]).get('id')
+        operator = Account.objects.get(id=user_id)
         res = None
         if content is not None and operator is not None:
             pub_date = corn_datetime.get_format_datetime()
